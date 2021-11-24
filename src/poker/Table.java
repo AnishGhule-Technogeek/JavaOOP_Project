@@ -73,7 +73,7 @@ Otherwise, to join by phone, dial +1 413-338-4613 and enter this PIN: 783 411 48
  * RULE: In Texas hold'em, the player on button, or last active player closest to the button receives the last action on all post-flop streets of play.
  *
  * Rounds ('Streets' as the game's lingo):
- * Preflop - 
+ * Preflop -
  * Flop    -
  * Turn    -
  * River   -
@@ -118,9 +118,9 @@ package poker;
 ///////////////////////////////////////////////////////////////////////////
 
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+
+import javax.management.InvalidAttributeValueException;
+import java.util.*;
 
 /**
  * <p>Handles the flow of the game, deals the cards, and has the deck.</p>
@@ -132,25 +132,31 @@ import java.util.Scanner;
  * and the player to that person's left puts at least twice the small blind (big blind).</p>
  */
 public class Table {
-    
-    private Deck deck;
+
+    public Deck deck;
     private int round;
     private List<Card> communityCards;
-    private int potAmount;
-    private List<Player> players;
-    
+    public int potAmount;
+    public List<Player> players;
+    private int hasBet;
+    private int highestBet;
+
     public int getRound() {
         return round;
     }
-    
+
     public void setRound(int round) {
         this.round = round;
     }
-    
+
     public List<Card> getCommunityCards() {
         return communityCards;
     }
-    
+
+    public void addCommunityCards(Card card){
+        communityCards.add(card);
+    }
+
     Table(){
         round = 0;
         potAmount = 0;
@@ -158,45 +164,440 @@ public class Table {
         deck = new Deck();
         players = new ArrayList<Player>();
     }
-    
-    public float getPotAmount() {
-        return potAmount;
-    }
-    
+
     public List<Player> getPlayers() {
         return players;
     }
-    
+
     public Card distributeCard(){
         return deck.distributeCard();
     }
-    
+
     public void shuffle(){
         deck.shuffle(deck.cards);
     }
+
+    public int getHighestBet() {
+        return highestBet;
+    }
+
+    public void setHighestBet(int highestBet) {
+        this.highestBet = highestBet;
+    }
+
+    public int getHasBet() {
+        return hasBet;
+    }
+
+    public void setHasBet(int hasBet) {
+        this.hasBet = hasBet;
+    }
+
+    /*
+    public void win(){
+        List<Integer> rank = new ArrayList<>();
+        List<String> highCard = new ArrayList<>();
+
+        List<String> highCard2 = new ArrayList<>();
+
+        for(Player p : players) {
+            if (p.isActive()) {
+                int r;  // temp value
+                String h1, h2;  // temp value
+                // Create new array with player cards + community cards
+                List<Card> allCards = new ArrayList<>();
+                allCards.addAll(p.getCards());
+                // allCards.add(p.getCards().get(0));
+                // allCards.add(p.getCards().get(1));
+                allCards.addAll(communityCards);
+                // allCards.add(communityCards.get(0));
+                // allCards.add(communityCards.get(1));
+                // allCards.add(communityCards.get(2));
+                // allCards.add(communityCards.get(3));
+                // allCards.add(communityCards.get(4));
+
+
+                // Sort cards
+                // compareTo() method in Card
+                Collections.sort(allCards);
+
+                //check 4 of a kind r=3
+        ArrayList<String> cardRank = new ArrayList<>();
+        int cardFreq[] = new int[7];
+        int ind=0;
+        for (Card c:allCards) {
+            if (cardRank.indexOf(c.getRank()) == -1) {
+                cardRank.add(c.getRank());
+                cardFreq[ind++] = 1;
+            } else {
+                cardFreq[cardRank.indexOf(c.getRank())] += 1;
+            }
+        }
+        int m1=cardFreq[0];
+        h1= cardRank.get(0);
+        int m2=0;
+        for(int k=1;k<7;k++){
+            if(cardFreq[k]>m1){
+                h2=h1;
+                m2=m1;
+                m1=cardFreq[k];
+                h1=cardRank.get(k);
+            }
+            else if(cardFreq[k]>m2){
+
+                m2=cardFreq[k];
+                h2=cardRank.get(k);
+            }
+
+        }
+        if(m1==4){
+            r=3;
+        }
+        else if(m1==3&&m2==2){
+            r=4;
+        }
+        else if(m1==3){
+            r=7;
+        }
+        else if(m1==2&&m2==2){
+            r=8;
+        }
+        else if(m1==2){
+            r=9;
+        }
+
+        //check 5 of suit
+        //check royal flush 1 AKQJ10
+        //check straight flush 2 any 5 consecutive
+        //else flush 5 but check 3 and 4 present also
+                // check straigt (5 consecutive regardless of suite)
+
+                //highest value
+            }
+            else{
+                rank[i++]=11;
+            }
+        }
+    }
+    */
 }
 
 
 class Poker{
     public static void main(String[] args) {
         Table dealer = new Table();
-        
+
+        final int MAX_PLAYERS = 4;
+
         Scanner sc = new Scanner(System.in);
-        for(int i = 0; i < 4; i++){
-            System.out.printf("Enter Player %d Name: ", i);
+        for(int i = 0; i < MAX_PLAYERS; i++){
+            System.out.printf("Enter Player %d Name: ", i + 1);
+            String name = sc.nextLine();
+
+            System.out.printf("How many chips, %s? ", name);
+            int chips = sc.nextInt();
+
             // Create a new player in each iteration
-            Player player = new Player();
-            // Set the player name
-            player.setName(sc.nextLine());
+            Player player = new Player(name, chips);
             // Distribute each player two topmost cards
             player.setCards(dealer.distributeCard());
             player.setCards(dealer.distributeCard());
+
+            // Finally add each player to player List
+            dealer.players.add(player);
+
+            // Flush sc
+            String flush = sc.nextLine();
         }
-        
+
+        int currentRound = 0;
+        // Round 0 : Pre-Flop
+        {
+            System.out.printf("\n\tROUND - %d\n", currentRound);
+            int i = 0;
+            boolean isBet = false;
+
+            // Reveal two community cards
+            // Burn the topmost card
+            dealer.deck.burnCard();
+
+            System.out.println("Revealing two community cards");
+            String userSleep = sc.nextLine();
+
+            Card communityCard;
+            // Add two cards to the community card deck of all active players
+            // 1st Card
+            dealer.addCommunityCards(dealer.distributeCard());
+            communityCard = dealer.getCommunityCards().get(0);
+            communityCard.setFaceUp(true);
+            System.out.println(communityCard.toString());
+            // 2nd Card
+            dealer.addCommunityCards(dealer.distributeCard());
+            communityCard = dealer.getCommunityCards().get(1);  // currentRound-1 always yields the index of latest added card in each round after preflop
+            communityCard.setFaceUp(true);
+            System.out.println(communityCard.toString());
+            System.out.println();
+
+            boolean allBetEqual = false;
+            while(!allBetEqual)  //i != dealer.players.size() - 1
+            {
+                if (dealer.players.get(i).isActive()) {
+                    dealer.players.get(i).isCurrentPlayer = true;
+                    boolean safetyCheck = false;
+                    while (!safetyCheck) {
+                        System.out.printf("\n\tROUND - %d\n", currentRound);
+                        System.out.printf("What do you want to do, %s?\n", dealer.players.get(i).getName());
+
+                        if(!isBet) {
+                            System.out.println(
+                                "\t3 - Fold\n" +
+                                "\t4 - Bet\n");
+                        } else{
+                            System.out.println(
+                                    "\t1 - Call\n" +
+                                    "\t2 - Raise\n" +
+                                    "\t3 - Fold\n");
+                        }
+
+                        int choice = sc.nextInt();
+
+                        safetyCheck = true;
+
+                        switch (choice) {
+                            case 1:
+                                if(!isBet){
+                                    System.out.println("No bet to call upon");
+
+                                    break;
+                                }
+                                try {
+                                    dealer.players.get(i).call(dealer.getHighestBet());
+                                } catch (IllegalArgumentException e) {
+                                    System.out.println("Bet higher than current amount of chips. Try again");
+                                    safetyCheck = false;
+                                }
+                                break;
+                            case 2:
+                                if(!isBet){
+                                    System.out.println("No bet to raise");
+
+                                    break;
+                                }
+                                System.out.println("What's the final amount you want to bet? ");
+                                int raisedAmount = sc.nextInt();
+                                // Flush sc
+                                String flush = sc.nextLine();
+                                try {
+                                    dealer.players.get(i).raise(raisedAmount);
+                                    for(int j = 0; j < dealer.players.size(); j++){
+                                        if(j!=i)
+                                        dealer.players.get(j).setEqualBet(false);
+                                    }
+                                } catch (IllegalArgumentException e) {
+                                    System.out.println("Bet higher than current amount of chips. Try again");
+                                    safetyCheck = false;
+                                }
+                                break;
+                            case 3:
+                                System.out.printf("You quit from the game, %s\n", dealer.players.get(i).getName());
+                                dealer.players.get(i).fold();
+                                break;
+                            case 4:
+                                if(!isBet) {
+                                    System.out.println("Amount to bet? ");
+                                    int chips = sc.nextInt();
+                                    // Flush sc
+                                    String flush2 = sc.nextLine();
+                                    try {
+                                        dealer.players.get(i).bet(chips);
+                                        isBet = true;
+                                        dealer.setHighestBet(chips);
+
+                                    } catch (IllegalArgumentException e) {
+                                        System.out.println("Bet higher than current amount of chips. Try again");
+                                        safetyCheck = false;
+                                    }
+                                    break;
+                                }
+                                else{
+                                    System.out.println("Bet already done this round.");
+
+                                }
+                        }
+                    }
+
+                    dealer.players.get(i).isCurrentPlayer = false;
+                    i = ++i % 4;
+                } else {
+                    i = ++i % 4;
+                }
+
+                allBetEqual = true;
+                for(int j = 0; j < dealer.players.size(); j++){
+                    allBetEqual = allBetEqual && dealer.players.get(j).isEqualBet();
+                }
+
+            }
+
+            for(int j = 0; j < dealer.players.size(); j++){
+                dealer.players.get(j).setEqualBet(false);
+            }
+
+            // Now move on to the next round
+            dealer.setRound(++currentRound);
+        }
+        // After completion of first round, add amount to pot
+        dealer.potAmount += dealer.getHighestBet();
+
+
+        // Rounds : 1 (Flop), 2 (Turn), 3 (River)
+        while(dealer.getRound() != 3){
+            // Print the current round
+            System.out.printf("\n\tROUND - %d\n", currentRound);
+
+            for(int j = 0; j < dealer.players.size(); j++){
+                dealer.players.get(j).setEqualBet(false);
+            }
+
+            // int currentRound = 0;  // No need to set as after preflop, we already increment the round number, likewise
+            int i = 0;
+            boolean isBet = false;
+            boolean allBetEqual = false;
+
+
+            // Do the following in each round
+            // Burn the topmost card
+            dealer.deck.burnCard();
+
+            // Add one card to the community card deck of all active players
+            dealer.addCommunityCards(dealer.distributeCard());
+            Card communityCard = dealer.getCommunityCards().get(currentRound - 1);  // currentRound-1 always yields the index of latest added card in each round after preflop
+            communityCard.setFaceUp(true);
+
+            System.out.println(communityCard.toString());
+
+            for(int itr = 0; itr < dealer.players.size(); itr++){
+                if(!dealer.players.get(itr).isActive()){
+                    continue;
+                }
+                dealer.players.get(itr).setCards(communityCard);
+            }
+
+            while(!allBetEqual) {
+                if (dealer.players.get(i).isActive()) {
+                    dealer.players.get(i).isCurrentPlayer = true;
+                    boolean safetyCheck = false;
+                    while (!safetyCheck) {
+                        System.out.printf("\n\tROUND - %d\n", currentRound);
+                    if(!isBet) {
+                        System.out.printf("What do you want to do, %s?\n" +
+                                        "\t4 - Bet\n" +
+                                        "\t5 - Check\n",
+                                dealer.players.get(i).getName());
+                    }
+                    else{
+                        System.out.printf("What do you want to do, %s?\n" +
+                                        "\t1 - Call\n" +
+                                        "\t2 - Raise\n" +
+                                        "\t3 - Fold\n" +
+                                        //"\t4 - Bet\n",
+                                dealer.players.get(i).getName());
+                    }
+
+
+                        int choice = sc.nextInt();
+                        safetyCheck = true;
+                        switch (choice) {
+                            case 1:
+                                if(!isBet){
+                                    System.out.println("No bet to call upon");
+
+                                    break;
+                                }
+                                try {
+                                    dealer.players.get(i).call(dealer.getHighestBet());
+                                } catch (IllegalArgumentException e) {
+                                    System.out.println("Bet higher than current amount of chips. Try again");
+
+                                    safetyCheck = false;
+                                }
+                                break;
+                            case 2:
+                                if(!isBet){
+                                    System.out.println("No bet to raise");
+
+                                    break;
+                                }
+                                System.out.println("What's the final amount you want to bet? ");
+                                int raisedAmount = sc.nextInt();
+                                try {
+                                    dealer.players.get(i).raise(raisedAmount);
+                                    for(int j = 0; j < dealer.players.size(); j++){
+                                        if(j != i)
+                                            dealer.players.get(j).setEqualBet(false);
+                                    }
+                                } catch (IllegalArgumentException e) {
+                                    System.out.println("Bet higher than current amount of chips. Try again");
+
+                                    safetyCheck = false;
+                                }
+                                break;
+                            case 3:
+                                System.out.printf("You quit from the game, %s\n", dealer.players.get(i).getName());
+                                dealer.players.get(i).fold();
+                                break;
+                            case 4:
+
+                                System.out.println("Amount to bet? ");
+                                int chips = sc.nextInt();
+                                try {
+                                    dealer.players.get(i).bet(chips);
+                                    isBet = true;
+                                    dealer.setHighestBet(chips);
+                                } catch (IllegalArgumentException e) {
+                                    System.out.println("Bet higher than current amount of chips. Try again");
+
+                                    safetyCheck = false;
+                                }
+                                break;
+                            case 5:
+                                if(isBet){
+                                    System.out.println("A member has bet before, so you cannot check");
+                                    break;
+                                }
+                                System.out.printf("%s, you checked.\n" +
+                                        "Thus, passed to %s\n",
+                                        dealer.players.get(i),
+                                        dealer.players.get(i + 1));
+
+                                break;
+                        }
+                    }
+
+                    dealer.players.get(i).isCurrentPlayer = false;
+                    i = ++i % 4;
+                }
+                else {
+                    i = ++i % 4;
+                }
+
+                allBetEqual = true;
+                for(int j = 0; j < dealer.players.size(); j++){
+                    if(dealer.players.get(i).isActive()) {
+                        allBetEqual = allBetEqual && dealer.players.get(j).isEqualBet();
+                    }
+                }
+            }
+
+            dealer.setRound(dealer.getRound()+1);
+
+
+            // After completion of each round, add amount to pot
+            dealer.potAmount += dealer.getHighestBet();
+        }
+
+        // TODO: Change cards of all players to faceUp
+
+        // TODO: Declaring the winner
     }
 }
-
-
-/*
- *
- */

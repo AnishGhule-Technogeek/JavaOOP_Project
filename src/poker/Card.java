@@ -48,6 +48,8 @@ public class Card implements Comparable<Card>{
     // Print a card by overriding the toString() method in java.lang
     @Override
     public String toString() {
+        if(faceUp)
+            return "A face up card - '" + rank + "' of suit '" + suit + "'";
         return "Card{" +
                 "faceUp=" + faceUp +
                 ", suit='" + suit + '\'' +

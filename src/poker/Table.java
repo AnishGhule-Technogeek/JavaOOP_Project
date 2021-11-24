@@ -287,9 +287,19 @@ class Poker{
     public static void main(String[] args) {
         Table dealer = new Table();
 
-        final int MAX_PLAYERS = 4;
+        int MAX_PLAYERS = 4;
 
         Scanner sc = new Scanner(System.in);
+    
+        System.out.printf("Are the number of players = %d? (Y/N): ", MAX_PLAYERS);
+        String confirmation = sc.nextLine();
+        if(confirmation.equalsIgnoreCase("N")){
+            System.out.println("Enter the number of players: ");
+            int numPlayers = sc.nextInt();
+            String flush = sc.nextLine();
+            MAX_PLAYERS = numPlayers;
+        }
+        
         for(int i = 0; i < MAX_PLAYERS; i++){
             System.out.printf("Enter Player %d Name: ", i + 1);
             String name = sc.nextLine();
@@ -316,12 +326,16 @@ class Poker{
             System.out.printf("\n\tROUND - %d\n", currentRound);
             int i = 0;
             boolean isBet = false;
-
+    
+            // DEBUG
+            System.out.println("Pot amount = " + dealer.potAmount);
+            
             // Reveal two community cards
             // Burn the topmost card
             dealer.deck.burnCard();
 
-            System.out.println("Revealing two community cards");
+            System.out.println("Revealing two community cards.\n" +
+                    "Press Enter to continue ");
             String userSleep = sc.nextLine();
 
             Card communityCard;
@@ -387,17 +401,26 @@ class Poker{
                                 int raisedAmount = sc.nextInt();
                                 // Flush sc
                                 String flush = sc.nextLine();
-                                try {
-                                    dealer.players.get(i).raise(raisedAmount);
-                                    for(int j = 0; j < dealer.players.size(); j++){
-                                        if(j!=i)
-                                        dealer.players.get(j).setEqualBet(false);
+                                if (raisedAmount > dealer.getHighestBet()) {
+                                    try {
+                                        dealer.players.get(i).raise(raisedAmount);
+                                        for (int j = 0; j < dealer.players.size(); j++) {
+                                            if (j != i)
+                                                dealer.players.get(j).setEqualBet(false);
+                                        }
+                                        dealer.setHighestBet(raisedAmount);
+                                    } catch (IllegalArgumentException e) {
+                                        System.out.println("Bet higher than current amount of chips. Try again");
+            
+                                        safetyCheck = false;
                                     }
-                                } catch (IllegalArgumentException e) {
+                                    break;
+                                }
+                                else{
                                     System.out.println("Bet higher than current amount of chips. Try again");
                                     safetyCheck = false;
+                                    break;
                                 }
-                                break;
                             case 3:
                                 System.out.printf("You quit from the game, %s\n", dealer.players.get(i).getName());
                                 dealer.players.get(i).fold();
@@ -421,22 +444,29 @@ class Poker{
                                 }
                                 else{
                                     System.out.println("Bet already done this round.");
-
+                                    break;
                                 }
+                            default:
+                                System.out.println("Not a valid Input. Please try again");
+                                --i;
+                                safetyCheck = false;
+                                break;
                         }
                     }
 
                     dealer.players.get(i).isCurrentPlayer = false;
-                    i = ++i % 4;
+                    i = ++i % MAX_PLAYERS;
                 } else {
-                    i = ++i % 4;
+                    i = ++i % MAX_PLAYERS;
                 }
 
                 allBetEqual = true;
-                for(int j = 0; j < dealer.players.size(); j++){
-                    allBetEqual = allBetEqual && dealer.players.get(j).isEqualBet();
+                for(int j = 0; j < dealer.players.size(); j++) {
+                    if (dealer.players.get(j).isActive()) {
+                        allBetEqual = allBetEqual && dealer.players.get(j).isEqualBet();
+                        System.out.println(allBetEqual);
+                    }
                 }
-
             }
 
             for(int j = 0; j < dealer.players.size(); j++){
@@ -448,6 +478,8 @@ class Poker{
         }
         // After completion of first round, add amount to pot
         dealer.potAmount += dealer.getHighestBet();
+        // DEBUG
+        System.out.println("Pot amount = " + dealer.potAmount);
 
 
         // Rounds : 1 (Flop), 2 (Turn), 3 (River)
@@ -489,24 +521,25 @@ class Poker{
                     boolean safetyCheck = false;
                     while (!safetyCheck) {
                         System.out.printf("\n\tROUND - %d\n", currentRound);
-                    if(!isBet) {
-                        System.out.printf("What do you want to do, %s?\n" +
-                                        "\t4 - Bet\n" +
-                                        "\t5 - Check\n",
-                                dealer.players.get(i).getName());
-                    }
-                    else{
-                        System.out.printf("What do you want to do, %s?\n" +
-                                        "\t1 - Call\n" +
-                                        "\t2 - Raise\n" +
-                                        "\t3 - Fold\n" +
-                                        //"\t4 - Bet\n",
-                                dealer.players.get(i).getName());
-                    }
+                        if(!isBet) {
+                            System.out.printf("What do you want to do, %s?\n" +
+                                            "\t4 - Bet\n" +
+                                            "\t5 - Check\n",
+                                    dealer.players.get(i).getName());
+                        }
+                        else{
+                            System.out.printf("What do you want to do, %s?\n" +
+                                            "\t1 - Call\n" +
+                                            "\t2 - Raise\n" +
+                                            "\t3 - Fold\n",
+                                    dealer.players.get(i).getName());
+                        }
 
 
                         int choice = sc.nextInt();
+                    
                         safetyCheck = true;
+                        
                         switch (choice) {
                             case 1:
                                 if(!isBet){
@@ -518,7 +551,6 @@ class Poker{
                                     dealer.players.get(i).call(dealer.getHighestBet());
                                 } catch (IllegalArgumentException e) {
                                     System.out.println("Bet higher than current amount of chips. Try again");
-
                                     safetyCheck = false;
                                 }
                                 break;
@@ -530,55 +562,92 @@ class Poker{
                                 }
                                 System.out.println("What's the final amount you want to bet? ");
                                 int raisedAmount = sc.nextInt();
-                                try {
-                                    dealer.players.get(i).raise(raisedAmount);
-                                    for(int j = 0; j < dealer.players.size(); j++){
-                                        if(j != i)
-                                            dealer.players.get(j).setEqualBet(false);
+                                // // Flush sc
+                                // String flush = sc.nextLine();
+                                if (raisedAmount > dealer.getHighestBet()) {
+                                    try {
+                                        dealer.players.get(i).raise(raisedAmount);
+                                        for (int j = 0; j < dealer.players.size(); j++) {
+                                            if (j != i)
+                                                dealer.players.get(j).setEqualBet(false);
+                                        }
+                                        dealer.setHighestBet(raisedAmount);
+                                    } catch (IllegalArgumentException e) {
+                                        System.out.println("Bet higher than current amount of chips. Try again");
+        
+                                        safetyCheck = false;
                                     }
-                                } catch (IllegalArgumentException e) {
-                                    System.out.println("Bet higher than current amount of chips. Try again");
-
-                                    safetyCheck = false;
+                                    break;
                                 }
-                                break;
+                                else{
+                                    System.out.println("Bet higher than current amount of chips. Try again");
+                                    safetyCheck = false;
+                                    break;
+                                }
                             case 3:
                                 System.out.printf("You quit from the game, %s\n", dealer.players.get(i).getName());
                                 dealer.players.get(i).fold();
                                 break;
                             case 4:
-
-                                System.out.println("Amount to bet? ");
-                                int chips = sc.nextInt();
-                                try {
-                                    dealer.players.get(i).bet(chips);
-                                    isBet = true;
-                                    dealer.setHighestBet(chips);
-                                } catch (IllegalArgumentException e) {
-                                    System.out.println("Bet higher than current amount of chips. Try again");
-
-                                    safetyCheck = false;
+                                //
+                                // System.out.println("Amount to bet? ");
+                                // int chips = sc.nextInt();
+                                // try {
+                                //     dealer.players.get(i).bet(chips);
+                                //     isBet = true;
+                                //     dealer.setHighestBet(chips);
+                                // } catch (IllegalArgumentException e) {
+                                //     System.out.println("Bet higher than current amount of chips. Try again");
+                                //
+                                //     safetyCheck = false;
+                                // }
+                                // break;
+                                //
+                                //
+                                if(!isBet) {
+                                    System.out.println("Amount to bet? ");
+                                    int chips = sc.nextInt();
+                                    // Flush sc
+                                    String flush2 = sc.nextLine();
+                                    try {
+                                        dealer.players.get(i).bet(chips);
+                                        isBet = true;
+                                        dealer.setHighestBet(chips);
+                
+                                    } catch (IllegalArgumentException e) {
+                                        System.out.println("Bet higher than current amount of chips. Try again");
+                                        safetyCheck = false;
+                                    }
+                                    break;
                                 }
-                                break;
+                                else{
+                                    System.out.println("Bet already done this round.");
+                                    break;
+                                }
                             case 5:
                                 if(isBet){
                                     System.out.println("A member has bet before, so you cannot check");
+                                    safetyCheck = false;
                                     break;
                                 }
                                 System.out.printf("%s, you checked.\n" +
                                         "Thus, passed to %s\n",
                                         dealer.players.get(i),
                                         dealer.players.get(i + 1));
-
+                                break;
+                            default:
+                                System.out.println("Not a valid Input. Please try again");
+                                --i;
+                                safetyCheck = false;
                                 break;
                         }
                     }
 
                     dealer.players.get(i).isCurrentPlayer = false;
-                    i = ++i % 4;
+                    i = ++i % MAX_PLAYERS;
                 }
                 else {
-                    i = ++i % 4;
+                    i = ++i % MAX_PLAYERS;
                 }
 
                 allBetEqual = true;
@@ -594,6 +663,8 @@ class Poker{
 
             // After completion of each round, add amount to pot
             dealer.potAmount += dealer.getHighestBet();
+            // DEBUG
+            System.out.println("Pot amount = " + dealer.potAmount);
         }
 
         // TODO: Change cards of all players to faceUp

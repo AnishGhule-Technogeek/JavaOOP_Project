@@ -70,7 +70,7 @@ public class Player {
             this.chips -= chips;
             this.currentBet = chips;
             this.equalBet = true;
-            System.out.println("Updated number of chips with you " + name + " : " + this.chips);
+            System.out.println("Updated number of chips with you " + this.getName() + " : " + this.chips);
         }
     }
 
@@ -81,7 +81,7 @@ public class Player {
             this.chips -= chips;
             this.currentBet = chips;
             this.equalBet = true;
-            System.out.println("Updated number of chips with you " + name + " : " + this.chips);
+            System.out.println("Updated number of chips with you " + this.getName() + " : " + this.chips);
         }
     }
 

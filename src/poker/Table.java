@@ -652,7 +652,7 @@ class Poker{
 
                 allBetEqual = true;
                 for(int j = 0; j < dealer.players.size(); j++){
-                    if(dealer.players.get(i).isActive()) {
+                    if(dealer.players.get(j).isActive()) {
                         allBetEqual = allBetEqual && dealer.players.get(j).isEqualBet();
                     }
                 }

@@ -75,7 +75,7 @@ public class Player {
     }
 
     public void call(int chips) throws IllegalArgumentException{
-        if (chips > this.chips) {
+        if (chips >= this.chips) {
             throw new IllegalArgumentException();
         } else {
             this.chips -= chips;
@@ -98,7 +98,7 @@ public class Player {
         // }
         //
 
-        if (chips > this.chips) {
+        if (chips >= this.chips) {
             throw new IllegalArgumentException();
         } else {
             this.chips -= chips;

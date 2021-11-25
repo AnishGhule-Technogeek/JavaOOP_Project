@@ -13,6 +13,7 @@ public class Player {
     private boolean equalBet;
     private int currentBet;
     private boolean isWinner;
+    private int allIn;
     
 
     Player(String name, int chips) {
@@ -24,6 +25,7 @@ public class Player {
         this.equalBet = false;
         this.currentBet = 0;
         this.isWinner = false;
+        this.allIn=0;
     }
 
     public String getName() {
@@ -77,11 +79,13 @@ public class Player {
         }
     }
 
-    public void call(int chips) throws IllegalArgumentException{
-        if (chips >= this.chips) {
+    public void call(int chips) {
+        if (chips >= this.chips-this.currentBet) {
+            this.chips=0;
+            
             throw new IllegalArgumentException();
         } else {
-            this.chips -= chips;
+            this.chips -= chips-this.currentBet;
             this.currentBet = chips;
             this.equalBet = true;
             System.out.println("Updated number of chips with you " + this.getName() + " : " + this.chips);
@@ -114,6 +118,7 @@ public class Player {
     public void fold() {
         System.out.printf("You have folded. Thus, you quit the game, %s\n\n", this.getName());
         this.isActive = false;
+        this.allIn=3;
     }
     
     public boolean isWinner() {
@@ -122,5 +127,13 @@ public class Player {
     
     public void setWinner(boolean isWinner) {
         this.isWinner = isWinner;
+    }
+    
+    public int getAllIn() {
+        return allIn;
+    }
+    
+    public void setAllIn(int allIn) {
+        this.allIn = allIn;
     }
 }

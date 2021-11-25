@@ -24,6 +24,14 @@ public class Card implements Comparable<Card>{
             r = 12;
         else if(rank.equals("J"))
             r = 11;
+        else if(rank.equals("spade"))
+            r = 4;
+        else if(rank.equals("heart"))
+            r = 3;
+        else if(rank.equals("diamond"))
+            r = 2;
+        else if(rank.equals("club"))
+            r = 1;
         else
             r = Integer.parseInt(rank);
         return r;
@@ -49,12 +57,8 @@ public class Card implements Comparable<Card>{
     @Override
     public String toString() {
         if(faceUp)
-            return "A face up card - '" + rank + "' of suit '" + suit + "'";
-        return "Card{" +
-                "faceUp=" + faceUp +
-                ", suit='" + suit + '\'' +
-                ", rank='" + rank + '\'' +
-                '}';
+            return "<" + rank + " " + suit + ">";
+        return "*";
     }
 
     @Override

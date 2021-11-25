@@ -11,7 +11,6 @@ A java program for a 2-4 player game of poker.
   <li><a href="#IO">Test Cases</a>
   <li><a href="#Install">Installation</a>
   <li><a href="#Runn">Running After Installation</a>
-  <li><a href="#Rules">Rules</a>
 </ul
   
 <a ID="Purp"><h1>Purpose</h1></a>
@@ -79,7 +78,3 @@ For Mac/Linux
 ```shell
 java src/poker/Table
 ```
-
-<a ID="Rules"><h1>Rules</h1></a>
-
-

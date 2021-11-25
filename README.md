@@ -13,6 +13,7 @@ A java program for a 2-4 player game of poker.
   <li><a href="#Runn">Running After Installation</a>
   <li><a href="#Analysis">Critical Project Analysis</a>
   <li><a href="#Declaration">Plagiarism Statement</a>
+  <li><a href="#Video">Video Demonstration</a>
 </ul
   
 <a ID="Purp"><h1>Purpose</h1></a>
@@ -86,3 +87,6 @@ java src/poker/Table
 
 <a ID="Declaration"><h1>Plagiarism Statement</h1></a>
 (Accessible only in BITS Pilani University) https://drive.google.com/file/d/16EItsu92vJEQnyhfo1afkO46y76IPH7E/view?usp=sharing
+
+<a ID="Videos"><h1>Video Demonstration</h1></a>
+(Accessible only in BITS Pilani University) https://drive.google.com/drive/folders/13p0flg3F8mijVzlPBu_3dNgDAH_B0DvC?usp=sharing

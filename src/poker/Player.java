@@ -12,6 +12,8 @@ public class Player {
     private int chips;
     private boolean equalBet;
     private int currentBet;
+    private boolean isWinner;
+    
 
     Player(String name, int chips) {
         this.name = name;
@@ -21,6 +23,7 @@ public class Player {
         this.chips = chips;
         this.equalBet = false;
         this.currentBet = 0;
+        this.isWinner = false;
     }
 
     public String getName() {
@@ -111,5 +114,13 @@ public class Player {
     public void fold() {
         System.out.printf("You have folded. Thus, you quit the game, %s\n\n", this.getName());
         this.isActive = false;
+    }
+    
+    public boolean isWinner() {
+        return isWinner;
+    }
+    
+    public void setWinner(boolean isWinner) {
+        this.isWinner = isWinner;
     }
 }

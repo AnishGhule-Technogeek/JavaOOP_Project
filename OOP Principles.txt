@@ -1,0 +1,22 @@
+1.Encapsulate what varies
+Our main function consists only of function calls for processes who can be improved upon or would tend to vary. For example all functionality of the players bet,call,check,fold and raise have only function calls.
+
+
+2.Favour composition over Inheritence
+We have used composition instead of Inheratnce as the relationship between Table and Deck. The reasons for this are:
+* The relation is better caputred by has-a instead of is-a.
+* Deck object is independent of the Table. 
+* Inheriting the Deck class would require us to compromise the encapsulation of Deck class by making Cards public 
+
+
+3.Program to an interface not implementation
+Not Applicable
+
+
+4.Strive for loose coupling between objects that interact
+
+
+5.Classes should be open for extension and closed for modification
+
+
+6.Depend on abstraction, do not depend on concrete classes
